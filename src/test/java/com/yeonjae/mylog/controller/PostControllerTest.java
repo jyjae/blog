@@ -11,6 +11,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
@@ -19,16 +22,52 @@ class PostControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("/posts 요청시 Hello world를 출력한다.")
-    void test() throws Exception {
+    @DisplayName("/v1/posts 요청시 Hello world를 출력한다.")
+    void testV1() throws Exception {
 
         // expected
-        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/posts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\" }")
                 )
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("Hello world"))
-                .andDo(MockMvcResultHandlers.print());
+                .andDo(print());
     }
+
+    @Test
+    @DisplayName("/v1/posts 요청시 title은 필수 값이다")
+    void testV1Validation () throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"\", \"content\" : \"내용입니다.\" }"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Hello world"));
+    }
+
+
+    @Test
+    @DisplayName("/v2/posts 요청시 Hello world를 출력한다.")
+    void testV2() throws Exception {
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.post("/v2/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\" }")
+                )
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("{}"))
+                .andDo(print());
+    }
+    @Test
+    @DisplayName("/v2/posts 요청시 title은 필수 값이다")
+    void testV2Validation () throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/v2/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"\", \"content\" : \"내용입니다.\" }"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("타이틀을 입력해주세요."))
+                .andDo(print());
+    }
+
 }
