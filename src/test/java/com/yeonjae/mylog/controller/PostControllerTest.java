@@ -1,46 +1,62 @@
 package com.yeonjae.mylog.controller;
 
+import com.yeonjae.mylog.domain.Post;
+import com.yeonjae.mylog.repository.PostRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@AutoConfigureMockMvc
+@SpringBootTest
 class PostControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
-    @DisplayName("/v1/posts 요청시 Hello world를 출력한다.")
-    void testV1() throws Exception {
+    @Autowired
+    private PostRepository postRepository;
 
-        // expected
-        mockMvc.perform(MockMvcRequestBuilders.post("/v1/posts")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\" }")
-                )
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Hello world"))
-                .andDo(print());
+    // 각각의 테스트는 서로 영향을 주면 안된다.
+    // 그래서 @BeforeEach 통해서 사전에 삭제해줌
+    @BeforeEach
+    void clean() {
+        postRepository.deleteAll();
     }
 
-    @Test
-    @DisplayName("/v1/posts 요청시 title은 필수 값이다")
-    void testV1Validation () throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/v1/posts")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\":\"\", \"content\" : \"내용입니다.\" }"))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Hello world"));
-    }
+//    @Test
+//    @DisplayName("/v1/posts 요청시 Hello world를 출력한다.")
+//    void testV1() throws Exception {
+//
+//        // expected
+//        mockMvc.perform(MockMvcRequestBuilders.post("/v1/posts")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\" }")
+//                )
+//                .andExpect(status().isOk())
+//                .andExpect(MockMvcResultMatchers.content().string("Hello world"))
+//                .andDo(print());
+//    }
+//
+//    @Test
+//    @DisplayName("/v1/posts 요청시 title은 필수 값이다")
+//    void testV1Validation () throws Exception {
+//        mockMvc.perform(MockMvcRequestBuilders.post("/v1/posts")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content("{\"title\":\"\", \"content\" : \"내용입니다.\" }"))
+//                .andExpect(status().isOk())
+//                .andExpect(MockMvcResultMatchers.content().string("타이틀값은 필수값입니다."));
+//    }
 
 
     @Test
@@ -96,5 +112,26 @@ class PostControllerTest {
                 .andExpect(jsonPath("$.validation.title").value("타이틀을 입력해주세요."))
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("/v3/posts 요청시 DB에 값이 저장된다.")
+    void testV3Write () throws Exception {
+        // when
+        mockMvc.perform(MockMvcRequestBuilders.post("/v3/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"제목입니다.\", \"content\" : \"내용입니다.\" }"))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        // then
+        assertEquals(1L, postRepository.count());
+
+        Post post = postRepository.findAll().get(0);
+        assertEquals("제목입니다.", post.getTitle());
+        assertEquals("내용입니다.", post.getContent());
+
+    }
+
+
 
 }
