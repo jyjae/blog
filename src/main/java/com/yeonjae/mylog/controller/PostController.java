@@ -81,9 +81,13 @@ public class PostController {
         4. 세 번 이상의 반복적인 작업은 피해야한다.
      */
     @PostMapping("/v3/posts")
-    public Map<String, String> postV3(@RequestBody @Valid PostCreate request) throws Exception {
+    public void postV3(@RequestBody @Valid PostCreate request) throws Exception {
+        // Case1. 저장한 데이터 Entity -> response로 응답하기
+        // Case2. 저장한 데이터의 primary_id -> response로 응답하기
+        // Case3. 응답 필요 없음 -> 클라이언트에서 모든 POST(글) 데이터 context를 잘 관리
+        // Bad Case: 서버에서 반드시 이렇게 할껍니다 fix!
+
         // repository.save(params)
         postService.write(request);
-        return Map.of();
     }
 }
