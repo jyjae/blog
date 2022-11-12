@@ -3,6 +3,7 @@ package com.yeonjae.mylog.service;
 import com.yeonjae.mylog.domain.Post;
 import com.yeonjae.mylog.repository.PostRepository;
 import com.yeonjae.mylog.request.PostCreate;
+import com.yeonjae.mylog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,11 +27,16 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public Post get(Long postId) {
+    public PostResponse get(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
 
-        return post;
+        return PostResponse.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .build();
+
 
     }
 }

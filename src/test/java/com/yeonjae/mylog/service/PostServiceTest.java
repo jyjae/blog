@@ -3,6 +3,7 @@ package com.yeonjae.mylog.service;
 import com.yeonjae.mylog.domain.Post;
 import com.yeonjae.mylog.repository.PostRepository;
 import com.yeonjae.mylog.request.PostCreate;
+import com.yeonjae.mylog.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,19 +51,22 @@ class PostServiceTest {
     void test2() {
         // given
         Post requestPost = Post.builder()
-                .title("foo")
+                .title("1234567891011121314")
                 .content("bar")
                 .build();
         postRepository.save(requestPost);
 
+        // 클라이언트 요구사항
+            // 응답 json title 값을 최대 10자로 해주세요.
+
         // when
-        Post post = postService.get(requestPost.getId());
+        PostResponse response = postService.get(requestPost.getId());
 
         //then
-        assertNotNull(post);
+        assertNotNull(response);
         assertEquals(1L, postRepository.count());
-        assertEquals("foo", post.getTitle());
-        assertEquals("bar", post.getContent());
+        assertEquals("1234567891", response.getTitle());
+        assertEquals("bar", response.getContent());
 
 
     }

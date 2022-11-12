@@ -2,6 +2,7 @@ package com.yeonjae.mylog.controller;
 
 import com.yeonjae.mylog.domain.Post;
 import com.yeonjae.mylog.request.PostCreate;
+import com.yeonjae.mylog.response.PostResponse;
 import com.yeonjae.mylog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -92,9 +93,14 @@ public class PostController {
         postService.write(request);
     }
 
+    // Request 클래스
+    // Response 클래스
+    // 두 클래스 분리
+
     @GetMapping("/posts/{postId}")
-    public Post get(@PathVariable Long postId) {
-        Post post = postService.get(postId);
-        return post;
+    public PostResponse get(@PathVariable Long postId) {
+        PostResponse response = postService.get(postId);
+        // 응답 클래스를 분리하세요 (서비스 정책에 맞는)
+        return response;
     }
 }
