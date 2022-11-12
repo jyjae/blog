@@ -1,5 +1,6 @@
 package com.yeonjae.mylog.controller;
 
+import com.yeonjae.mylog.domain.Post;
 import com.yeonjae.mylog.request.PostCreate;
 import com.yeonjae.mylog.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -89,5 +90,11 @@ public class PostController {
 
         // repository.save(params)
         postService.write(request);
+    }
+
+    @GetMapping("/posts/{postId}")
+    public Post get(@PathVariable Long postId) {
+        Post post = postService.get(postId);
+        return post;
     }
 }
