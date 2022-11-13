@@ -1,11 +1,9 @@
 package com.yeonjae.mylog.controller;
 
-import com.yeonjae.mylog.domain.Post;
 import com.yeonjae.mylog.request.PostCreate;
 import com.yeonjae.mylog.response.PostResponse;
 import com.yeonjae.mylog.service.PostService;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -102,5 +100,10 @@ public class PostController {
         PostResponse response = postService.get(postId);
         // 응답 클래스를 분리하세요 (서비스 정책에 맞는)
         return response;
+    }
+
+    @GetMapping("/posts")
+    public List<PostResponse> getList() {
+        return postService.getList();
     }
 }

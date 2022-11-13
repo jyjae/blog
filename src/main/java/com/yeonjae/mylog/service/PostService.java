@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -38,5 +40,13 @@ public class PostService {
                 .build();
 
 
+    }
+
+    public List<PostResponse> getList() {
+        //여기서 PostResponse builder를 사용해서 생성하면 나중에 service쪽에 builder부분이 상당히 많아질것이다.
+        //  >> PostResponse 쪽에서 생성자 오버로딩을 사용한다.
+        return postRepository.findAll().stream()
+                .map(PostResponse::new)
+                .collect(Collectors.toList());
     }
 }
