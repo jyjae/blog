@@ -3,6 +3,7 @@ package com.yeonjae.mylog.service;
 import com.yeonjae.mylog.domain.Post;
 import com.yeonjae.mylog.repository.PostRepository;
 import com.yeonjae.mylog.request.PostCreate;
+import com.yeonjae.mylog.request.PostSearch;
 import com.yeonjae.mylog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +52,12 @@ public class PostService {
         //ageRequest pageRequest  = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC,"id"));
 
         return postRepository.findAll(pageable).stream()
+                .map(PostResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<PostResponse> getListByQueryDsl(PostSearch request) {
+        return postRepository.getListByQueryDsl(request).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
     }

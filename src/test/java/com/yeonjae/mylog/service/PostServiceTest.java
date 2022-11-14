@@ -3,6 +3,7 @@ package com.yeonjae.mylog.service;
 import com.yeonjae.mylog.domain.Post;
 import com.yeonjae.mylog.repository.PostRepository;
 import com.yeonjae.mylog.request.PostCreate;
+import com.yeonjae.mylog.request.PostSearch;
 import com.yeonjae.mylog.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -78,7 +79,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("글 1페이지 조회")
+    @DisplayName("글 페이징 처리 조회")
     void test3() {
         // given
         List<Post> requestPosts = IntStream.range(1,31)
@@ -99,6 +100,33 @@ class PostServiceTest {
 
         // then
         assertEquals(5L, responses.size());
+        assertEquals("제목 - 30", responses.get(0).getTitle());
+        assertEquals("내용 - 26", responses.get(4).getContent());
+
+    }
+
+    @Test
+    @DisplayName("글 querydsl 페이징 처리 조회")
+    void test4() {
+        // given
+        List<Post> requestPosts = IntStream.range(1,31)
+                .mapToObj(i -> Post.builder()
+                                .title("제목 - "+i)
+                                .content("내용 - "+i)
+                                .build()
+                ).collect(Collectors.toList());
+
+
+        postRepository.saveAll(requestPosts);
+
+        PostSearch request = PostSearch.builder()
+                .build();
+
+        // when
+        List<PostResponse> responses = postService.getListByQueryDsl(request);
+
+        // then
+        assertEquals(10L, responses.size());
         assertEquals("제목 - 30", responses.get(0).getTitle());
         assertEquals("내용 - 26", responses.get(4).getContent());
 

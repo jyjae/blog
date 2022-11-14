@@ -1,6 +1,7 @@
 package com.yeonjae.mylog.controller;
 
 import com.yeonjae.mylog.request.PostCreate;
+import com.yeonjae.mylog.request.PostSearch;
 import com.yeonjae.mylog.response.PostResponse;
 import com.yeonjae.mylog.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -114,5 +115,10 @@ public class PostController {
     @GetMapping("/posts")
     public List<PostResponse> getList(Pageable pageable) {
         return postService.getList(pageable);
+    }
+
+    @GetMapping("/v2/posts")
+    public List<PostResponse> getListByQueryDsl(@ModelAttribute PostSearch request) {
+        return postService.getListByQueryDsl(request);
     }
 }
