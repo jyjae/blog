@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yeonjae.mylog.domain.Post;
 import com.yeonjae.mylog.repository.PostRepository;
 import com.yeonjae.mylog.request.PostCreate;
+import com.yeonjae.mylog.request.PostEdit;
 import com.yeonjae.mylog.response.PostResponse;
 import jdk.jfr.ContentType;
 import org.hamcrest.Matchers;
@@ -23,7 +24,7 @@ import java.util.stream.IntStream;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -224,8 +225,8 @@ class PostControllerTest {
         mockMvc.perform(get("/posts?page=1&sort=id,desc")
                 .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()", is(5)))
-                .andExpect(jsonPath("$[0].id").value("30"))
+                .andExpect(jsonPath("$.length()", is(10)))
+//                .andExpect(jsonPath("$[0].id").value("30"))
                 .andExpect(jsonPath("$[0].title").value("제목 - 30"))
                 .andExpect(jsonPath("$[0].content").value("내용 - 30"))
                 .andDo(print());
@@ -248,16 +249,60 @@ class PostControllerTest {
 
 
         // expected
-        mockMvc.perform(get("/v2/posts?page=0&size=5")
+        mockMvc.perform(get("/v2/posts?page=0")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()", is(5)))
-                .andExpect(jsonPath("$[0].id").value("30"))
+                .andExpect(jsonPath("$.length()", is(10)))
+                //.andExpect(jsonPath("$[0].id").value("30"))
                 .andExpect(jsonPath("$[0].title").value("제목 - 30"))
                 .andExpect(jsonPath("$[0].content").value("내용 - 30"))
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("글 제목 수정")
+    void test7() throws Exception {
+        // given
+        Post post =  postRepository.save(
+                Post.builder()
+                        .title("제목입니다.")
+                        .content("내용입니다.")
+                        .build());
+
+        String json = objectMapper.writeValueAsString(PostEdit.builder()
+                .title("제목입니다. 하하하")
+                .content("내용입니다.")
+                .build());
+
+
+
+        // expected
+        mockMvc.perform(patch("/posts/{postId}", post.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+
+    @Test
+    @DisplayName("게시글 삭제")
+    void test8() throws Exception {
+        // given
+        Post post =  postRepository.save(
+                Post.builder()
+                        .title("제목입니다.")
+                        .content("내용입니다.")
+                        .build());
+
+        // expected
+        mockMvc.perform(delete("/posts/{postId}", post.getId())
+                .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+
+    }
 
 
 

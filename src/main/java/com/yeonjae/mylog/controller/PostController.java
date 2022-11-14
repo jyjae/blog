@@ -1,6 +1,7 @@
 package com.yeonjae.mylog.controller;
 
 import com.yeonjae.mylog.request.PostCreate;
+import com.yeonjae.mylog.request.PostEdit;
 import com.yeonjae.mylog.request.PostSearch;
 import com.yeonjae.mylog.response.PostResponse;
 import com.yeonjae.mylog.service.PostService;
@@ -120,5 +121,15 @@ public class PostController {
     @GetMapping("/v2/posts")
     public List<PostResponse> getListByQueryDsl(@ModelAttribute PostSearch request) {
         return postService.getListByQueryDsl(request);
+    }
+
+    @PatchMapping("/posts/{postId}")
+    public void edit(@PathVariable Long postId, @RequestBody @Valid PostEdit postEdit) {
+        postService.edit(postId, postEdit);
+    }
+
+    @DeleteMapping("/posts/{postId}")
+    public void delete(@PathVariable Long postId) {
+        postService.delete(postId);
     }
 }

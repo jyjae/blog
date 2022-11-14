@@ -3,6 +3,7 @@ package com.yeonjae.mylog.service;
 import com.yeonjae.mylog.domain.Post;
 import com.yeonjae.mylog.repository.PostRepository;
 import com.yeonjae.mylog.request.PostCreate;
+import com.yeonjae.mylog.request.PostEdit;
 import com.yeonjae.mylog.request.PostSearch;
 import com.yeonjae.mylog.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -131,5 +132,80 @@ class PostServiceTest {
         assertEquals("내용 - 26", responses.get(4).getContent());
 
     }
+
+    @Test
+    @DisplayName("제목 수정")
+    void test5() {
+        // given
+        Post post =  postRepository.save(
+                Post.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .build());
+
+        PostEdit request = PostEdit.builder()
+                .title("제목입니다. 하하하하")
+                .content("내용입니다.")
+                .build();
+
+        // when
+        postService.edit(post.getId(), request);
+
+        // then
+        Post changedPost = postRepository.findById(post.getId())
+                .orElseThrow(() -> new RuntimeException("글이 수정되지 않았습니다. id=" + post.getId()));
+
+        assertEquals("제목입니다. 하하하하", changedPost.getTitle());
+        assertEquals("내용입니다.", changedPost.getContent());
+
+    }
+
+    @Test
+    @DisplayName("내용 수정")
+    void test6() {
+        // given
+        Post post =  postRepository.save(
+                Post.builder()
+                        .title("제목입니다.")
+                        .content("내용입니다.")
+                        .build());
+
+        PostEdit request = PostEdit.builder()
+                .title("제목입니다.")
+                .content("내용입니다. 하하하")
+                .build();
+
+        // when
+        postService.edit(post.getId(), request);
+
+        // then
+        Post changedPost = postRepository.findById(post.getId())
+                .orElseThrow(() -> new RuntimeException("글이 수정되지 않았습니다. id=" + post.getId()));
+
+        assertEquals("제목입니다.", changedPost.getTitle());
+        assertEquals("내용입니다. 하하하", changedPost.getContent());
+
+    }
+
+    @Test
+    @DisplayName("글 삭제")
+    void test7() {
+        // given
+        Post post =  postRepository.save(
+                Post.builder()
+                        .title("제목입니다.")
+                        .content("내용입니다.")
+                        .build());
+        postRepository.save(post);
+
+        // when
+        postService.delete(post.getId());
+
+        // then
+        assertEquals(0, postRepository.count());
+
+    }
+
+
 
 }

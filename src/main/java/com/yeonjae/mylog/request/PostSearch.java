@@ -1,12 +1,16 @@
 package com.yeonjae.mylog.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import static java.lang.Math.max;
 
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PostSearch {
     @Builder.Default
     private Integer page = 1;

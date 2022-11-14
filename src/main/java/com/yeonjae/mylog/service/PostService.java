@@ -1,8 +1,10 @@
 package com.yeonjae.mylog.service;
 
 import com.yeonjae.mylog.domain.Post;
+import com.yeonjae.mylog.domain.PostEditor;
 import com.yeonjae.mylog.repository.PostRepository;
 import com.yeonjae.mylog.request.PostCreate;
+import com.yeonjae.mylog.request.PostEdit;
 import com.yeonjae.mylog.request.PostSearch;
 import com.yeonjae.mylog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,5 +63,38 @@ public class PostService {
         return postRepository.getListByQueryDsl(request).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void edit(Long id, PostEdit postEdit) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+
+        // 변경
+        // 1. setter 금지
+        // 2. 만약 post 안에서 바로 변경 시 문제 생길 수 있다
+        //  >> Editor 클래스 새로 생성...
+
+        // no 픽스
+        PostEditor.PostEditorBuilder editorBuilder = post.toEditor();
+
+        post.edit(editorBuilder
+                .title(postEdit.getTitle())
+                .content(postEdit.getContent())
+                .build());
+
+        /*
+            >> @Transactional 선언적 명시해줌으로써 commit 알아서 해주니깐 생략 가능.
+            postRepository.save(post);
+         */
+    }
+
+
+    public void delete(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+
+        // 존재하는 경우
+        postRepository.delete(post);
     }
 }
