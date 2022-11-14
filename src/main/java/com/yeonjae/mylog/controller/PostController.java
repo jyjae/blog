@@ -1,5 +1,6 @@
 package com.yeonjae.mylog.controller;
 
+import com.yeonjae.mylog.exception.InvalidRequest;
 import com.yeonjae.mylog.request.PostCreate;
 import com.yeonjae.mylog.request.PostEdit;
 import com.yeonjae.mylog.request.PostSearch;
@@ -87,6 +88,7 @@ public class PostController {
      */
     @PostMapping("/v3/posts")
     public void postV3(@RequestBody @Valid PostCreate request) throws Exception {
+        request.validate();
         // Case1. 저장한 데이터 Entity -> response로 응답하기
         // Case2. 저장한 데이터의 primary_id -> response로 응답하기
         // Case3. 응답 필요 없음 -> 클라이언트에서 모든 POST(글) 데이터 context를 잘 관리
