@@ -2,6 +2,7 @@ package com.yeonjae.mylog.service;
 
 import com.yeonjae.mylog.domain.Post;
 import com.yeonjae.mylog.domain.PostEditor;
+import com.yeonjae.mylog.exception.PostNotFound;
 import com.yeonjae.mylog.repository.PostRepository;
 import com.yeonjae.mylog.request.PostCreate;
 import com.yeonjae.mylog.request.PostEdit;
@@ -38,7 +39,7 @@ public class PostService {
 
     public PostResponse get(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+                .orElseThrow(PostNotFound::new);
 
         return PostResponse.builder()
                 .id(post.getId())
@@ -68,7 +69,7 @@ public class PostService {
     @Transactional
     public void edit(Long id, PostEdit postEdit) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+                .orElseThrow((PostNotFound::new));
 
         // 변경
         // 1. setter 금지
@@ -92,7 +93,7 @@ public class PostService {
 
     public void delete(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+                .orElseThrow(PostNotFound::new);
 
         // 존재하는 경우
         postRepository.delete(post);

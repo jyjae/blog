@@ -1,6 +1,7 @@
 package com.yeonjae.mylog.service;
 
 import com.yeonjae.mylog.domain.Post;
+import com.yeonjae.mylog.exception.PostNotFound;
 import com.yeonjae.mylog.repository.PostRepository;
 import com.yeonjae.mylog.request.PostCreate;
 import com.yeonjae.mylog.request.PostEdit;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -205,6 +205,61 @@ class PostServiceTest {
         assertEquals(0, postRepository.count());
 
     }
+
+    @Test
+    @DisplayName("글 1개 조회 - 존재하지 않는 글")
+    void test8() {
+        // given
+        Post post = Post.builder()
+                .title("1234567891011121314")
+                .content("bar")
+                .build();
+        postRepository.save(post);
+
+
+        // expected
+        assertThrows(PostNotFound.class, () -> postService.get(post.getId()+1L));
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 - 존재하지 않는 글")
+    void test9() {
+        // given
+        Post post =  postRepository.save(
+                Post.builder()
+                        .title("제목입니다.")
+                        .content("내용입니다.")
+                        .build());
+        postRepository.save(post);
+
+        // expected
+        assertThrows(PostNotFound.class, () ->postService.delete(post.getId()+1L));
+
+    }
+
+    @Test
+    @DisplayName("게시글 수정 - 존재하지 않는 글")
+    void test10() {
+        // given
+        Post post =  postRepository.save(
+                Post.builder()
+                        .title("제목입니다.")
+                        .content("내용입니다.")
+                        .build());
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("제목입니다. 하핳")
+                .content("내용입니다.")
+                .build();
+
+        // expected
+        assertThrows(PostNotFound.class, () ->postService.edit(post.getId()+1L, postEdit));
+
+    }
+
+
+
 
 
 
