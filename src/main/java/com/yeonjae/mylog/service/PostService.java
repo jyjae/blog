@@ -6,6 +6,9 @@ import com.yeonjae.mylog.request.PostCreate;
 import com.yeonjae.mylog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,10 +45,12 @@ public class PostService {
 
     }
 
-    public List<PostResponse> getList() {
+    public List<PostResponse> getList(Pageable pageable) {
         //여기서 PostResponse builder를 사용해서 생성하면 나중에 service쪽에 builder부분이 상당히 많아질것이다.
         //  >> PostResponse 쪽에서 생성자 오버로딩을 사용한다.
-        return postRepository.findAll().stream()
+        //ageRequest pageRequest  = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC,"id"));
+
+        return postRepository.findAll(pageable).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
     }
