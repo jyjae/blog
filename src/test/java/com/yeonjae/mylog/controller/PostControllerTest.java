@@ -343,7 +343,12 @@ class PostControllerTest {
                 .andDo(print());
     }
 
+    // API 문서 생성
+    // Spring RestDocs 를 사용하는 이유
+    /* 1. 운영코드에 영향이 없음
+       2. Test 케이스 실행 -> 문서가 수정도면 문서를 생성해준다.
 
+     */
 
 
 }
